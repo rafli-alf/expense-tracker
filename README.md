@@ -20,7 +20,7 @@ Data disimpan lokal di SQLite tanpa server.
     python expense.py total
 
 ## Struktur
-    '''bash
+    ```bash
     expense.py -> Seluruh logika CLI + Akses SQLite
     expenses.db -> database lokal (dibuat otomatis, tidak dicommit)
 
@@ -29,7 +29,7 @@ Data disimpan lokal di SQLite tanpa server.
 
 ## Roadmap
     - [x] `add`, `list`, `total`
-    - [ ] `delete` berdasarkan ID
-    - [ ] Filter `list` berdasarkan kategori
+    - [x] `delete` berdasarkan ID
+    - [x] Filter `list` berdasarkan kategori
     - [ ] Pindah ke argparse
     - [ ] Unit test dengan pytest
