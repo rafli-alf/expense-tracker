@@ -28,16 +28,26 @@ def add_expense(amount: int, description: str, category: str) -> None:
             (amount, description, category)
         )
 
-def list_expenses() -> None:
+def list_expenses(target_category: str | None = None) -> None:
+    query = "SELECT id, amount, description, category FROM expenses"
+    param = []
+
+    if target_category:
+        query += " WHERE category = ?"
+        param.append(target_category)
+
+    query += " ORDER BY id"
+
     with sqlite3.connect(DB_Path) as conn:
-        rows = conn.execute(
-            "SELECT id, amount, description, category FROM expenses ORDER BY id"
-        ).fetchall()
+        rows = conn.execute(query, param).fetchall()
+
     if not rows:
-        print("Belum ada Pengeluaran")
+        print(f"Belum ada Pengeluaran" + (f" untuk kategori '{target_category}'" if target_category else ""))
         return
+
     print(f"{'ID':>3} {'Jumlah':>15} {'Kategori':>15} Keterangan")
     print("-" * 60)
+
     for id_, amount, desc, cat in rows: 
         print(f"{id_:>3} {format_rupiah(amount):>15} {cat:>15} {desc}")
 
@@ -48,6 +58,14 @@ def total_expenses() -> int:
         ).fetchone()
     return total[0] if total[0] is not None else 0
 
+def delete_expense(expense_id: int) -> None:
+    with sqlite3.connect(DB_Path) as conn:
+        cursor = conn.execute(
+            "DELETE FROM expenses WHERE id = ?",
+            (expense_id,)
+        )
+        return cursor.rowcount > 0
+
 def main():
     init_db()
     if len(sys.argv) < 2:
@@ -55,6 +73,7 @@ def main():
         print(" python expense.py add <jumlah> <keterangan> [kategori]")
         print(" python expense.py list")
         print(" python expense.py total")
+        print(" python expense.py delete <id>")
         return
 
     command = sys.argv[1]
@@ -72,9 +91,26 @@ def main():
         add_expense(amount, description, category)
         print(f"✔ Ditambahkan: {amount} — {description} ({category})")
     elif command == "list":
-        list_expenses()
+        if len(sys.argv) == 4 and sys.argv[2] == "--category":
+            list_expenses(sys.argv[3])
+        else:
+            list_expenses()
     elif command == "total":
         print(f"Total Pengeluaran: {format_rupiah(total_expenses())}")
+    elif command == "delete":
+        if len(sys.argv) < 3:
+            print("Butuh: delete <id>")
+            return
+        try:
+            expense_id = int(sys.argv[2])
+        except ValueError:
+            print("ID harus berupa angka")
+            return
+
+        if delete_expense(expense_id):
+            print(f"✔ Pengeluaran dengan ID {expense_id} telah dihapus")
+        else:
+            print(f"❌ Tidak ada pengeluaran dengan ID {expense_id}")
     else:
         print(f"Perintah tidak dikenal: {command}")
 
