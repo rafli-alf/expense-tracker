@@ -18,6 +18,8 @@ Data disimpan lokal di SQLite tanpa server.
     python expense.py add 20000 "kopi" food
     python expense.py list
     python expense.py total
+    python expense.py --category food
+    python expense.py delete 1
 
 ## Struktur
     ```bash
