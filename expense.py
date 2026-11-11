@@ -1,9 +1,9 @@
 """Expense Tracker - v 0"""
 
 import sqlite3
-import sys
+import argparse
 
-DB_Path = 'expenses.db'
+DB_PATH = 'expenses.db'
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS expenses(
@@ -18,11 +18,11 @@ def format_rupiah(amount: int) -> str:
     return "Rp " + f"{amount:,}".replace(",", ".")
 
 def init_db():
-    with sqlite3.connect(DB_Path) as conn:
+    with sqlite3.connect(DB_PATH) as conn:
         conn.execute(SCHEMA)
 
 def add_expense(amount: int, description: str, category: str) -> None:
-    with sqlite3.connect(DB_Path) as conn:
+    with sqlite3.connect(DB_PATH) as conn:
         conn.execute(
             "INSERT INTO expenses(amount, description, category) VALUES (?, ?, ?)",
             (amount, description, category)
@@ -38,7 +38,7 @@ def list_expenses(target_category: str | None = None) -> None:
 
     query += " ORDER BY id"
 
-    with sqlite3.connect(DB_Path) as conn:
+    with sqlite3.connect(DB_PATH) as conn:
         rows = conn.execute(query, param).fetchall()
 
     if not rows:
@@ -52,14 +52,14 @@ def list_expenses(target_category: str | None = None) -> None:
         print(f"{id_:>3} {format_rupiah(amount):>15} {cat:>15} {desc}")
 
 def total_expenses() -> int:
-    with sqlite3.connect(DB_Path) as conn:
+    with sqlite3.connect(DB_PATH) as conn:
         total = conn.execute(
             "SELECT SUM(amount) FROM expenses"
         ).fetchone()
     return total[0] if total[0] is not None else 0
 
-def delete_expense(expense_id: int) -> None:
-    with sqlite3.connect(DB_Path) as conn:
+def delete_expense(expense_id: int) -> bool:
+    with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.execute(
             "DELETE FROM expenses WHERE id = ?",
             (expense_id,)
@@ -67,52 +67,48 @@ def delete_expense(expense_id: int) -> None:
         return cursor.rowcount > 0
 
 def main():
+    parser = argparse.ArgumentParser(description="Aplikasi Pencatat Pengeluaran")
+
+    subparsers = parser.add_subparsers(dest="command", required=True, help="Perintah yang tersedia")
+
+    # --- Setup perintah "add" ---
+    parser_add = subparsers.add_parser("add", help="Tambah pengeluaran baru")
+    parser_add.add_argument("amount", type=int, help="Jumlah pengeluaran (angka)")
+    parser_add.add_argument("description", type=str, help="Keterangan pengeluaran")
+    parser_add.add_argument("--category", "-c", type=str, default="Umum", help="Kategori pengeluaran (default:Umum)")
+
+    # --- Setup perintah "list" ---
+    parser_list = subparsers.add_parser("list", help="Daftar Pengeluaran")
+    parser_list.add_argument("--category", "-c", type=str, help="Filter berdasarkan kategori (default:Umum)")
+
+    # --- Setup perintah "total" ---
+    subparsers.add_parser("total", help="Hitung Total Pengeluaran")
+
+    # --- Setup perintah "delete" ---
+    parser_delete = subparsers.add_parser("delete", help="Hapus pengeluaran berdasarkan ID")
+    parser_delete.add_argument("id", type=int, help="Id pengeluaran yang akan dihapus")
+
+    args = parser.parse_args()
+
     init_db()
-    if len(sys.argv) < 2:
-        print("Pemakaian: ")
-        print(" python expense.py add <jumlah> <keterangan> [kategori]")
-        print(" python expense.py list")
-        print(" python expense.py total")
-        print(" python expense.py delete <id>")
-        return
 
-    command = sys.argv[1]
-    if command == "add":
-        if len(sys.argv) < 4:
-            print("Butuh: add <jumlah> <keterangan> [kategori]")
-            return
-        try:
-            amount = int(sys.argv[2])
-        except ValueError:
-            print("Jumlah harus berupa angka")
-            return
-        description = sys.argv[3]
-        category = sys.argv[4] if len(sys.argv) > 4 else "Umum"
-        add_expense(amount, description, category)
-        print(f"✔ Ditambahkan: {amount} — {description} ({category})")
-    elif command == "list":
-        if len(sys.argv) == 4 and sys.argv[2] == "--category":
-            list_expenses(sys.argv[3])
-        else:
-            list_expenses()
-    elif command == "total":
+    # --- Menjalankan fungsi berdasarkan input ---
+    if args.command == "add":
+        add_expense(args.amount, args.description, args.category)
+        print(f"✔ Ditambahkan: {format_rupiah(args.amount)} — {args.description} ({args.category})")
+        
+    elif args.command == "list":
+        list_expenses(args.category)
+    
+    elif args.command == "total":
         print(f"Total Pengeluaran: {format_rupiah(total_expenses())}")
-    elif command == "delete":
-        if len(sys.argv) < 3:
-            print("Butuh: delete <id>")
-            return
-        try:
-            expense_id = int(sys.argv[2])
-        except ValueError:
-            print("ID harus berupa angka")
-            return
-
-        if delete_expense(expense_id):
-            print(f"✔ Pengeluaran dengan ID {expense_id} telah dihapus")
+        
+    elif args.command == "delete":
+        if delete_expense(args.id):
+            print(f"✔ Pengeluaran dengan ID {args.id} berhasil dihapus.")
         else:
-            print(f"❌ Tidak ada pengeluaran dengan ID {expense_id}")
-    else:
-        print(f"Perintah tidak dikenal: {command}")
+            print(f"❌ Pengeluaran dengan ID {args.id} tidak ditemukan.")
+
 
 if __name__ == "__main__":
     main()
