@@ -13,6 +13,7 @@ Data disimpan lokal di SQLite tanpa server.
 git clone https://github.com/rafli-alf/expense-tracker.git
 cd expense-tracker
 python expense.py
+```
 
 ## Contoh Penggunaan
 ```bash
@@ -22,6 +23,7 @@ python expense.py list
 python expense.py list -c food
 python expense.py total
 python expense.py delete 1
+```
 
 ## Struktur
 - expense.py -> Seluruh logika CLI + Akses SQLite
