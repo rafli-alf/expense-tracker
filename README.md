@@ -9,32 +9,35 @@ Data disimpan lokal di SQLite tanpa server.
 - `delete` - Hapus pengeluaran berdasarkan ID
 
 ## Instalasi
+Pastikan Python 3.10+ sudah terpasang. Clone repositori ini dan jalankan:
 ```bash
 git clone https://github.com/rafli-alf/expense-tracker.git
 cd expense-tracker
-python expense.py
+pip install -e .
 ```
 
 ## Contoh Penggunaan
 ```bash
-python expense.py add 50000 "makan siang" -c food
-python expense.py add 20000 "kopi" -c food
-python expense.py list
-python expense.py list -c food
-python expense.py total
-python expense.py delete 1
+expense add 50000 "makan siang" -c food
+expense add 20000 "kopi" -c food
+expense list
+expense list -c food
+expense total
+expense delete 1
 ```
 
 ## Struktur
-- expense.py -> Seluruh logika CLI + Akses SQLite
-- expenses.db -> database lokal (dibuat otomatis, tidak dicommit)
+src/expense_tracker/cli.py -> Logika antarmuka terminal (argparse)
+src/expense_tracker/db.py -> Logika database (SQLite)
+pyproject.toml -> Konfigurasi package Python
 
 ## Teknologi 
 Python 3, SQLite, Standard Library (tanpa dependency eksternal)
 
 ## Roadmap
-    -[x] `add`, `list`, `total`
-    -[x] `delete` berdasarkan ID
-    -[x] Filter `list` berdasarkan kategori
-    -[x] Pindah ke argparse
-    -[ ] Unit test dengan pytest
+- [x] `add`, `list`, `total`
+- [x] `delete` berdasarkan ID
+- [x] Filter `list` berdasarkan kategori
+- [x] Pindah ke argparse
+- [x] Struktur package [x] src/ dan pyproject.toml
+- [ ] Unit test dengan pytest
