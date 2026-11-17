@@ -27,12 +27,18 @@ expense delete 1
 ```
 
 ## Struktur
-src/expense_tracker/cli.py -> Logika antarmuka terminal (argparse)
-src/expense_tracker/db.py -> Logika database (SQLite)
-pyproject.toml -> Konfigurasi package Python
+- src/expense_tracker/cli.py -> Logika antarmuka terminal (argparse)
+- src/expense_tracker/db.py -> Logika database (SQLite)
+- pyproject.toml -> Konfigurasi package Python
 
 ## Teknologi 
 Python 3, SQLite, Standard Library (tanpa dependency eksternal)
+
+## Testing
+Untuk Menjalankan unit test:
+```bash
+python -m pytest -v
+```
 
 ## Roadmap
 - [x] `add`, `list`, `total`
@@ -40,4 +46,4 @@ Python 3, SQLite, Standard Library (tanpa dependency eksternal)
 - [x] Filter `list` berdasarkan kategori
 - [x] Pindah ke argparse
 - [x] Struktur package [x] src/ dan pyproject.toml
-- [ ] Unit test dengan pytest
+- [x] Unit test dengan pytest
