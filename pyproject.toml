@@ -7,6 +7,9 @@ name = "expense-tracker"
 version = "0.1.0"
 description = "CLI Sederhana untuk mencatat pengeluaran harian"
 requires-python = ">=3.10"
+dependencies = [
+    "rich>=13.0"
+]
 
 [project.scripts]
 expense = "expense_tracker.cli:main"

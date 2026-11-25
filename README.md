@@ -7,6 +7,7 @@ Data disimpan lokal di SQLite tanpa server.
 - `list` - Tampilkan semua pengeluaran
 - `total` - Hitung total pengeluaran
 - `delete` - Hapus pengeluaran berdasarkan ID
+- `export` - Export data ke file csv
 
 ## Instalasi
 Pastikan Python 3.10+ sudah terpasang. Clone repositori ini dan jalankan:
@@ -24,15 +25,16 @@ expense list
 expense list -c food
 expense total
 expense delete 1
+expense export data_pengeluaran.csv
 ```
 
 ## Struktur
-- src/expense_tracker/cli.py -> Logika antarmuka terminal (argparse)
+- src/expense_tracker/cli.py -> Logika antarmuka terminal (argparse & rich)
 - src/expense_tracker/db.py -> Logika database (SQLite)
 - pyproject.toml -> Konfigurasi package Python
 
 ## Teknologi 
-Python 3, SQLite, Standard Library (tanpa dependency eksternal)
+Python 3, SQLite, Standard Library, Rich
 
 ## Testing
 Untuk Menjalankan unit test:
@@ -47,3 +49,5 @@ python -m pytest -v
 - [x] Pindah ke argparse
 - [x] Struktur package [x] src/ dan pyproject.toml
 - [x] Unit test dengan pytest
+- [x] Tampilan terminal menggunakan Rich
+- [x] Fitur Export ke csv
